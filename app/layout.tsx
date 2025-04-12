@@ -19,7 +19,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${nunitoSans.variable} antialiased`}>{children}</body>
+      <body className={`${nunitoSans.variable} animate-pan antialiased`}>
+        {children}
+      </body>
     </html>
   );
 }
