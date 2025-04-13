@@ -20,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${nunitoSans.variable} animate-pan antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${nunitoSans.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <header>
             {/* Votre en-tête ici */}
@@ -30,7 +30,7 @@ export default function RootLayout({
               <ThemeSwitch /> {/* Bouton pour changer de thème */}
             </nav>
           </header>
-          {children}
+          <div className="animate-pan">{children}</div>
         </ThemeProvider>
       </body>
     </html>

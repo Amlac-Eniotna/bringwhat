@@ -1,11 +1,13 @@
+/** @type {import('tailwindcss').Config} */
 module.exports = {
-  darkMode: "class", // utilise la classe 'dark' pour activer le thème sombre
-  content: [
-    "./pages/**/*.{js,ts,jsx,tsx}",
-    "./components/**/*.{js,ts,jsx,tsx}",
-  ],
+  darkMode: "class",
+  content: ["./app/**/*.{js,ts,jsx,tsx}", "./components/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        pan: "pan 96s linear infinite",
+      },
+    },
   },
   plugins: [],
 };
