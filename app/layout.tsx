@@ -49,7 +49,7 @@ export default function RootLayout({
               <ModeToggle />
             </div>
           </header>
-          <div className="animate-pan">{children}</div>
+          {children}
         </ThemeProvider>
       </body>
     </html>
