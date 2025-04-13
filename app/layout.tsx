@@ -1,4 +1,6 @@
+import ThemeSwitch from "@/components/theme-switch";
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -20,7 +22,16 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${nunitoSans.variable} animate-pan antialiased`}>
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <header>
+            {/* Votre en-tête ici */}
+            <nav>
+              {/* Navigation */}
+              <ThemeSwitch /> {/* Bouton pour changer de thème */}
+            </nav>
+          </header>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
