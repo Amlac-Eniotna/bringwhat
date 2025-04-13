@@ -1,6 +1,6 @@
-import ThemeSwitch from "@/components/theme-switch";
+import { ThemeProvider } from "@/components/theme/theme-provider";
+import ThemeSwitch from "@/components/theme/theme-switch";
 import type { Metadata } from "next";
-import { ThemeProvider } from "next-themes";
 import { Nunito_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -20,9 +20,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="fr" suppressHydrationWarning>
       <body className={`${nunitoSans.variable} antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <header>
             {/* Votre en-tête ici */}
             <nav>
