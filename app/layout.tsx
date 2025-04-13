@@ -1,11 +1,22 @@
 import { ThemeProvider } from "@/components/theme/theme-provider";
-import ThemeSwitch from "@/components/theme/theme-switch";
+import { ModeToggle } from "@/components/theme/toggle-theme";
 import type { Metadata } from "next";
-import { Nunito_Sans } from "next/font/google";
+import { Nunito, Nunito_Sans, Syne } from "next/font/google";
+import Link from "next/link";
 import "./globals.css";
 
 const nunitoSans = Nunito_Sans({
   variable: "--font-nunito-sans",
+  subsets: ["latin"],
+});
+
+const nunito = Nunito({
+  variable: "--font-nunito",
+  subsets: ["latin"],
+});
+
+const syne = Syne({
+  variable: "--font-syne",
   subsets: ["latin"],
 });
 
@@ -21,19 +32,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${nunitoSans.variable} antialiased`}>
+      <body
+        className={`${nunitoSans.variable} ${nunito.variable} ${syne.variable} font-nunito-sans antialiased`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <header>
-            {/* Votre en-tête ici */}
-            <nav>
-              {/* Navigation */}
-              <ThemeSwitch /> {/* Bouton pour changer de thème */}
-            </nav>
+          <header className="relative m-auto flex w-full max-w-3xl justify-between">
+            <Link href={"/"}>
+              <h1 className="font-syne p-4 text-3xl font-black">BringWhat</h1>
+            </Link>
+            <div className="p-4">
+              <ModeToggle />
+            </div>
           </header>
           <div className="animate-pan">{children}</div>
         </ThemeProvider>
