@@ -43,7 +43,7 @@ export default function RootLayout({
         >
           <header className="relative m-auto flex w-full max-w-3xl justify-between">
             <Link href={"/"}>
-              <h1 className="font-syne p-4 text-3xl font-black">Bliag</h1>
+              <h1 className="font-syne p-4 text-3xl font-black">BringWhat</h1>
             </Link>
             <div className="p-4">
               <ModeToggle />
