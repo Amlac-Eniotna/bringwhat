@@ -22,7 +22,6 @@ COPY app ./app
 COPY components ./components
 COPY actions ./actions
 COPY lib ./lib
-COPY public ./public
 COPY next.config.ts .
 COPY eslint.config.mjs .
 COPY components.json .
