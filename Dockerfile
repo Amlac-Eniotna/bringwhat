@@ -1,59 +1,50 @@
 FROM node:18-alpine AS base
 
-# Step 1. Rebuild the source code only when needed
-FROM base AS builder
+# Dépendances nécessaires pour Prisma
+RUN apk add --no-cache libc6-compat openssl
 
 WORKDIR /app
 
-# Copier le dossier prisma AVANT l'installation des dépendances
-COPY prisma ./prisma
+# Dépendances de développement
+FROM base AS deps
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Install dependencies based on the preferred package manager
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
-RUN \
-  if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-  elif [ -f package-lock.json ]; then npm ci; \
-  elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
-  else echo "Warning: Lockfile not found. It is recommended to commit lockfiles to version control." && yarn install; \
-  fi
+# Builder
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
 
-# Copier TOUS les fichiers nécessaires
-COPY app ./app
-COPY components ./components
-COPY actions ./actions
-COPY lib ./lib
-COPY next.config.ts .
-COPY eslint.config.mjs .
-COPY components.json .
-COPY tailwind.config.js .
-COPY tsconfig.json .
-COPY postcss.config.mjs .
+# Variables d'environnement pour le build
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
 
-# Build the Next.js application
+# Construction de l'application
 RUN npm run build
 
-# Step 2. Production image, copy all the files and run next
+# Image de production
 FROM base AS runner
-
 WORKDIR /app
 
-ENV NODE_ENV=production
+ENV NODE_ENV production
 
-# Don't run production as root
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/prisma ./prisma
+
+# Utilisation des traces pour optimiser la taille de l'image
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Variables d'environnement pour l'exécution
+ARG DATABASE_URL
+ENV DATABASE_URL=${DATABASE_URL}
+
 USER nextjs
 
-# Copier le dossier build et autres fichiers nécessaires depuis l'étape builder
-COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
-COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
-COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
-COPY --from=builder --chown=nextjs:nodejs /app/lib/generated/prisma ./lib/generated/prisma
-
-# Définir le port sur lequel l'application va écouter
-ENV PORT 3000
 EXPOSE 3000
 
-# Démarrer l'application Next.js
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
