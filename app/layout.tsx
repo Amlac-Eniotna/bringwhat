@@ -1,5 +1,6 @@
 import { ThemeProvider } from "@/components/theme/theme-provider";
 import { ModeToggle } from "@/components/theme/toggle-theme";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import { Nunito, Nunito_Sans, Syne } from "next/font/google";
 import Link from "next/link";
@@ -50,6 +51,7 @@ export default function RootLayout({
             </div>
           </header>
           {children}
+          <Toaster toasts={[]} />
         </ThemeProvider>
       </body>
     </html>

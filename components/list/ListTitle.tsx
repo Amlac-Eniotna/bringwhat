@@ -1,6 +1,7 @@
 "use client";
 import { updateListTitle } from "@/actions/update-list-title";
-import { Check, Loader2, Pen, X } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
+import { Check, Loader2, Pen, Share2, X } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useState } from "react";
 import { Button } from "../ui/button";
@@ -18,11 +19,13 @@ export interface ListTitleProps {
 export function ListTitle({ title }: ListTitleProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [titleText, setTitleText] = useState(title);
   const [errors, setErrors] = useState<FieldErrors>({});
 
   const params = useParams();
   const listId = params.id as string;
+  const { toast } = useToast();
 
   const handleUpdate = async () => {
     setIsSubmitting(true);
@@ -56,19 +59,76 @@ export function ListTitle({ title }: ListTitleProps) {
     setIsEditing(false);
   };
 
+  const handleShare = async () => {
+    setIsSharing(true);
+
+    try {
+      const url = window.location.href;
+
+      // Try using Navigator.share API if available (mobile devices)
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `BringWhat`,
+            text: `Check out this items list: ${title}`,
+            url: url,
+          });
+        } catch (error) {
+          // Ignorer spécifiquement l'erreur d'annulation
+          if (error instanceof Error && error.name !== "AbortError") {
+            // Ne remonte que les vraies erreurs, pas les annulations
+            throw error;
+          }
+          // Sinon, c'est juste une annulation de partage, pas une vraie erreur
+        }
+      } else {
+        // Fallback to clipboard copy
+        await navigator.clipboard.writeText(url);
+        toast({
+          title: "Link copied!",
+          description: "The list URL has been copied to your clipboard.",
+          duration: 3000,
+        });
+      }
+    } catch (error) {
+      console.error("Error sharing:", error);
+      // Only show error for real issues
+      toast({
+        title: "Failed to share",
+        description: "There was an error sharing this list.",
+        variant: "destructive",
+        duration: 3000,
+      });
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
   if (!isEditing) {
     return (
-      <div className="flex items-center">
-        <h1 className="mr-6 max-w-lg text-xl font-black text-pretty text-black dark:text-white">
-          {title}
-        </h1>
-        <Button
-          variant="outline"
-          className="cursor-pointer backdrop-blur-xs"
-          onClick={() => setIsEditing(true)}
-        >
-          <Pen />
-        </Button>
+      <div className="flex w-full items-center justify-between">
+        <div className="flex w-full items-center justify-between gap-2">
+          <h1 className="m-auto w-full text-center text-xl text-black dark:text-white">
+            {title}
+          </h1>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="cursor-pointer backdrop-blur-xs"
+              onClick={() => setIsEditing(true)}
+            >
+              <Pen className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              className="cursor-pointer backdrop-blur-xs"
+              onClick={handleShare}
+              disabled={isSharing}
+            >
+              <Share2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -78,8 +138,8 @@ export function ListTitle({ title }: ListTitleProps) {
       <div className="w-full">
         <input
           type="text"
-          placeholder="Title"
-          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full rounded-md border bg-transparent px-3 text-lg font-medium backdrop-blur-xs outline-none focus:ring-1"
+          placeholder="List title"
+          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full rounded-md border bg-transparent p-2 text-lg font-medium backdrop-blur-xs outline-none focus:ring-1"
           value={titleText}
           onChange={(e) => setTitleText(e.target.value)}
           disabled={isSubmitting}
@@ -93,7 +153,7 @@ export function ListTitle({ title }: ListTitleProps) {
         <p className="text-destructive text-xs">{errors._form[0]}</p>
       )}
 
-      <div className="flex justify-end gap-2">
+      <div className="flex gap-2">
         <Button
           variant="outline"
           onClick={handleCancel}
@@ -101,12 +161,23 @@ export function ListTitle({ title }: ListTitleProps) {
         >
           <X className="h-4 w-4" />
         </Button>
-        <Button onClick={handleUpdate} disabled={isSubmitting}>
+        <Button
+          onClick={handleUpdate}
+          disabled={isSubmitting}
+          className="border border-white"
+        >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Check className="h-4 w-4" />
           )}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handleShare}
+          disabled={isSubmitting || isSharing}
+        >
+          <Share2 className="h-4 w-4" />
         </Button>
       </div>
     </div>

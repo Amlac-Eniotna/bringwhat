@@ -72,37 +72,30 @@ export function CreateListItem() {
   }
 
   return (
-    <div className="w-full space-y-2 rounded-md border p-3">
-      <div className="space-y-2">
-        <div>
-          <input
-            type="text"
-            placeholder="Item name"
-            className="text-foreground focus:border-primary focus:ring-primary w-full rounded-md border bg-transparent p-2 outline-none focus:ring-1"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            disabled={isSubmitting}
-          />
-          {errors.title && (
-            <p className="text-destructive mt-1 text-xs">{errors.title[0]}</p>
-          )}
-        </div>
-
-        <div>
-          <input
-            type="text"
-            placeholder="Quantity (optional)"
-            className="text-foreground focus:border-primary focus:ring-primary w-full rounded-md border bg-transparent p-2 outline-none focus:ring-1"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-            disabled={isSubmitting}
-          />
-          {errors.quantity && (
-            <p className="text-destructive mt-1 text-xs">
-              {errors.quantity[0]}
-            </p>
-          )}
-        </div>
+    <div className="flex w-full gap-2">
+      <div className="flex w-full gap-2">
+        <input
+          type="text"
+          placeholder="Item name"
+          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full rounded-md border bg-transparent p-2 outline-none focus:ring-1"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={isSubmitting}
+        />
+        {errors.title && (
+          <p className="text-destructive mt-1 text-xs">{errors.title[0]}</p>
+        )}
+        <input
+          type="text"
+          placeholder="Quantity (optional)"
+          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full max-w-16 rounded-md border bg-transparent p-2 outline-none focus:ring-1"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+          disabled={isSubmitting}
+        />
+        {errors.quantity && (
+          <p className="text-destructive mt-1 text-xs">{errors.quantity[0]}</p>
+        )}
       </div>
 
       {errors._form && (
@@ -110,20 +103,19 @@ export function CreateListItem() {
       )}
 
       <div className="flex justify-end gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleCancel}
-          disabled={isSubmitting}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-        <Button size="sm" onClick={handleAddItem} disabled={isSubmitting}>
+        <Button onClick={handleAddItem} disabled={isSubmitting}>
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <Check className="h-4 w-4" />
           )}
+        </Button>
+        <Button
+          variant="outline"
+          onClick={handleCancel}
+          disabled={isSubmitting}
+        >
+          <X className="h-4 w-4" />
         </Button>
       </div>
     </div>
