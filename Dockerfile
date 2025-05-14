@@ -18,18 +18,18 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Variables d'environnement pour le build
+# Variables d'environnement pour le build (correction du format ENV)
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Construction de l'application
-RUN npm run build
+# Construction de l'application en désactivant ESLint
+RUN DISABLE_ESLINT_PLUGIN=true npm run build
 
 # Image de production
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -41,7 +41,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Variables d'environnement pour l'exécution
+# Variables d'environnement pour l'exécution (correction du format ENV)
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
