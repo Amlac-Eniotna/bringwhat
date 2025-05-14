@@ -7,6 +7,8 @@ WORKDIR /app
 
 # Dépendances de développement
 FROM base AS deps
+# Copier le dossier prisma en premier pour que prisma generate fonctionne
+COPY prisma ./prisma
 COPY package.json package-lock.json* ./
 RUN npm ci
 
