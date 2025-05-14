@@ -155,13 +155,6 @@ export function ListTitle({ title }: ListTitleProps) {
 
       <div className="flex gap-2">
         <Button
-          variant="outline"
-          onClick={handleCancel}
-          disabled={isSubmitting}
-        >
-          <X className="h-4 w-4" />
-        </Button>
-        <Button
           onClick={handleUpdate}
           disabled={isSubmitting}
           className="border border-white"
@@ -174,10 +167,11 @@ export function ListTitle({ title }: ListTitleProps) {
         </Button>
         <Button
           variant="outline"
-          onClick={handleShare}
-          disabled={isSubmitting || isSharing}
+          className="backdrop-blur-xs"
+          onClick={handleCancel}
+          disabled={isSubmitting}
         >
-          <Share2 className="h-4 w-4" />
+          <X className="h-4 w-4" />
         </Button>
       </div>
     </div>

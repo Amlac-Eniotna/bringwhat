@@ -176,6 +176,7 @@ export function Item({ item }: ListItemProps) {
             )}
           </Button>
           <Button
+            className="backdrop-blur-xs"
             variant="outline"
             onClick={handleCancel}
             disabled={isSubmitting}

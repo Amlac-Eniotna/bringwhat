@@ -77,7 +77,7 @@ export function CreateListItem() {
         <input
           type="text"
           placeholder="Item name"
-          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full rounded-md border bg-transparent p-2 outline-none focus:ring-1"
+          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full rounded-md border bg-transparent p-2 backdrop-blur-xs outline-none focus:ring-1"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           disabled={isSubmitting}
@@ -88,7 +88,7 @@ export function CreateListItem() {
         <input
           type="text"
           placeholder="Quantity (optional)"
-          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full max-w-16 rounded-md border bg-transparent p-2 outline-none focus:ring-1"
+          className="text-foreground focus:border-primary focus:ring-primary h-9 w-full max-w-16 rounded-md border bg-transparent p-2 backdrop-blur-xs outline-none focus:ring-1"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
           disabled={isSubmitting}
@@ -103,7 +103,11 @@ export function CreateListItem() {
       )}
 
       <div className="flex justify-end gap-2">
-        <Button onClick={handleAddItem} disabled={isSubmitting}>
+        <Button
+          onClick={handleAddItem}
+          disabled={isSubmitting}
+          className="border border-white"
+        >
           {isSubmitting ? (
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
@@ -111,6 +115,7 @@ export function CreateListItem() {
           )}
         </Button>
         <Button
+          className="backdrop-blur-xs"
           variant="outline"
           onClick={handleCancel}
           disabled={isSubmitting}
