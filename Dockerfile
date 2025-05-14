@@ -17,7 +17,6 @@ RUN \
 
 # Adjust the files and folders that should be copied to the build container
 COPY app ./app
-COPY public ./public
 COPY components ./components
 COPY lib ./lib
 COPY next.config.ts .
