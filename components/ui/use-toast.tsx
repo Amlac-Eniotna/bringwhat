@@ -93,13 +93,22 @@ export const toast = ((props: Omit<ToastProps, "id">) => {
     }
   }
 
+  const duration = props.duration || 5000;
+  
   toasts.set(id, {
     ...props,
     id,
     createdAt: Date.now(),
-    duration: props.duration || 5000,
+    duration,
   });
   emit();
+  
+  // Auto-dismiss après la durée spécifiée
+  if (duration > 0) {
+    setTimeout(() => {
+      toast.dismiss(id);
+    }, duration);
+  }
 
   return {
     id,

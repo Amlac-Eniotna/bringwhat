@@ -3,7 +3,7 @@ import { updateListTitle } from "@/actions/update-list-title";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, Loader2, Pen, Share2, X } from "lucide-react";
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 
 // Define proper types for the error structure
@@ -22,10 +22,27 @@ export function ListTitle({ title }: ListTitleProps) {
   const [isSharing, setIsSharing] = useState(false);
   const [titleText, setTitleText] = useState(title);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [canShare, setCanShare] = useState(false);
 
   const params = useParams();
   const listId = params.id as string;
   const { toast } = useToast();
+
+  // Check if sharing is available when component mounts
+  useEffect(() => {
+    // Check if navigator.share exists AND is a function
+    // Using try-catch to handle cases where some browsers might throw on property access
+    try {
+      setCanShare(
+        typeof navigator !== "undefined" &&
+          "share" in navigator &&
+          typeof navigator.share === "function",
+      );
+    } catch (e) {
+      console.warn("Error detecting share capability:", e);
+      setCanShare(false);
+    }
+  }, []);
 
   const handleUpdate = async () => {
     setIsSubmitting(true);
@@ -59,46 +76,159 @@ export function ListTitle({ title }: ListTitleProps) {
     setIsEditing(false);
   };
 
+  const copyToClipboardFallback = (text: string) => {
+    // Create a temporary input element
+    const tempInput = document.createElement("input");
+    tempInput.value = text;
+    tempInput.setAttribute("readonly", "");
+    tempInput.style.position = "absolute";
+    tempInput.style.left = "-9999px";
+    tempInput.style.opacity = "0";
+    tempInput.style.userSelect = "text"; // Ensure text can be selected
+    document.body.appendChild(tempInput);
+
+    let copySuccess = false;
+
+    // Special handling for iOS
+    const isIOS =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !("MSStream" in window);
+
+    if (isIOS) {
+      // iOS needs specific approach
+      const range = document.createRange();
+      range.selectNodeContents(tempInput);
+
+      const selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+        tempInput.setSelectionRange(0, text.length); // For iOS
+
+        try {
+          copySuccess = document.execCommand("copy");
+        } catch (err) {
+          console.error("iOS fallback copy failed:", err);
+        }
+
+        selection.removeAllRanges();
+      }
+    } else {
+      // Standard approach for other devices
+      tempInput.focus();
+      tempInput.select();
+      tempInput.setSelectionRange(0, text.length);
+
+      try {
+        copySuccess = document.execCommand("copy");
+      } catch (err) {
+        console.error("Standard fallback copy failed:", err);
+      }
+    }
+
+    // Remove the temporary input
+    document.body.removeChild(tempInput);
+    return copySuccess;
+  };
+
   const handleShare = async () => {
     setIsSharing(true);
 
     try {
       const url = window.location.href;
 
-      // Try using Navigator.share API if available (mobile devices)
-      if (navigator.share) {
+      // Try Web Share API first (primarily for mobile)
+      if (canShare) {
         try {
-          await navigator.share({
-            title: `BringWhat`,
-            text: `Check out this items list: ${title}`,
-            url: url,
-          });
-        } catch (error) {
-          // Ignorer spécifiquement l'erreur d'annulation
-          if (error instanceof Error && error.name !== "AbortError") {
-            // Ne remonte que les vraies erreurs, pas les annulations
-            throw error;
+          // Double-check if navigator.share is available right at the moment of use
+          if (typeof navigator.share === "function") {
+            await navigator.share({
+              title: `BringWhat: ${title}`,
+              text: `Check out this list: ${title}`,
+              url: url,
+            });
+
+            // Success message after share
+            toast({
+              title: "Shared successfully!",
+              description: "Thank you for sharing this list.",
+              duration: 2000,
+            });
+
+            setIsSharing(false);
+            return; // Exit early if sharing was successful
+          } else {
+            console.warn("Web Share API unavailable at time of use");
+            // Fall through to clipboard methods
           }
-          // Sinon, c'est juste une annulation de partage, pas une vraie erreur
+        } catch (error) {
+          console.log("Share API error:", error);
+          // Only treat it as a real error if it's not just the user canceling
+          if (error instanceof Error && error.name !== "AbortError") {
+            // Fall through to clipboard methods
+            console.warn("Share API failed:", error);
+          } else {
+            // Just a cancellation, no error to show
+            setIsSharing(false);
+            return;
+          }
         }
+      }
+
+      // Clipboard API as second choice
+      if (
+        navigator.clipboard &&
+        typeof navigator.clipboard.writeText === "function"
+      ) {
+        try {
+          await navigator.clipboard.writeText(url);
+          // Force React to complete any pending state updates
+          setTimeout(() => {
+            toast({
+              title: "Link copied!",
+              description: "The list URL has been copied to your clipboard.",
+              duration: 2000,
+            });
+          }, 0);
+          setIsSharing(false);
+          return;
+        } catch (clipboardError) {
+          console.warn("Clipboard API failed:", clipboardError);
+          // Fall through to manual method
+        }
+      }
+
+      // Last resort: manual copy method
+      const copySuccess = copyToClipboardFallback(url);
+
+      if (copySuccess) {
+        // Force React to complete any pending state updates
+        setTimeout(() => {
+          toast({
+            title: "Link copied!",
+            description: "The list URL has been copied to your clipboard.",
+            duration: 2000,
+          });
+        }, 0);
       } else {
-        // Fallback to clipboard copy
-        await navigator.clipboard.writeText(url);
-        toast({
-          title: "Link copied!",
-          description: "The list URL has been copied to your clipboard.",
-          duration: 3000,
-        });
+        // If all methods fail, show instructions
+        setTimeout(() => {
+          toast({
+            title: "Manual copy needed",
+            description: "Please copy this URL manually: " + url,
+            duration: 5000,
+          });
+        }, 0);
       }
     } catch (error) {
-      console.error("Error sharing:", error);
-      // Only show error for real issues
-      toast({
-        title: "Failed to share",
-        description: "There was an error sharing this list.",
-        variant: "destructive",
-        duration: 3000,
-      });
+      console.error("Error in sharing process:", error);
+      setTimeout(() => {
+        toast({
+          title: "Failed to share",
+          description: "There was an error sharing this list.",
+          variant: "destructive",
+          duration: 2000,
+        });
+      }, 0);
     } finally {
       setIsSharing(false);
     }
@@ -125,7 +255,11 @@ export function ListTitle({ title }: ListTitleProps) {
               onClick={handleShare}
               disabled={isSharing}
             >
-              <Share2 className="h-4 w-4" />
+              {isSharing ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Share2 className="h-4 w-4" />
+              )}
             </Button>
           </div>
         </div>

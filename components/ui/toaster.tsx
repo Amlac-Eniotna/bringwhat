@@ -26,14 +26,21 @@ interface Toaster {
   className?: string;
 }
 
-export function Toaster({ toasts, className }: Toaster) {
-  const { dismissToast, dismissWithAnimation } = useToast();
+export function Toaster({ toasts = [], className }: Partial<Toaster>) {
+  const { toasts: hookToasts, dismissToast, dismissWithAnimation } = useToast();
+  
+  // Utiliser les toasts du hook si aucun n'est fourni via les props
+  const activeToasts = toasts.length ? toasts : hookToasts;
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, ...props }) {
+      {activeToasts.map(function ({ id, title, description, action, variant, ...props }) {
+        // Filtrer les props internes qui ne doivent pas être transmises aux éléments DOM
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { duration, createdAt, ...restProps } = props as { duration?: number; createdAt?: number; [key: string]: unknown };
+        
         return (
-          <Toast key={id} {...props} className={cn(className)}>
+          <Toast key={id} variant={variant} className={cn(className)} {...restProps}>
             <div className="grid gap-1">
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && (

@@ -51,7 +51,7 @@ export default function RootLayout({
             </div>
           </header>
           {children}
-          <Toaster toasts={[]} />
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
