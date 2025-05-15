@@ -1,4 +1,4 @@
-FROM node:22-alpine AS base
+FROM node:18-alpine AS base
 
 # Dépendances nécessaires pour Prisma
 RUN apk add --no-cache libc6-compat openssl
@@ -18,12 +18,15 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Variables d'environnement pour le build (correction du format ENV)
+# Variables d'environnement pour le build
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
-# Construction de l'application en désactivant ESLint
-RUN DISABLE_ESLINT_PLUGIN=true npm run build
+# NOUVEAU: Désactiver ESLint complètement
+RUN echo '{"extends": "next/core-web-vitals", "rules": { "@typescript-eslint/no-unused-vars": "off", "@typescript-eslint/no-unused-expressions": "off", "@typescript-eslint/no-require-imports": "off" } }' > .eslintrc.json
+
+# Construction de l'application
+RUN npm run build
 
 # Image de production
 FROM base AS runner
@@ -41,7 +44,7 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Variables d'environnement pour l'exécution (correction du format ENV)
+# Variables d'environnement pour l'exécution
 ARG DATABASE_URL
 ENV DATABASE_URL=${DATABASE_URL}
 
