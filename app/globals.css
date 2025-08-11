@@ -8,14 +8,19 @@
   --animate-pan: pan 24s linear infinite;
   @keyframes pan {
     0% {
-      background-position: 0% 0%;
+      background-position:
+        center center,
+        0% 0%;
     }
     100% {
-      background-position: 128px 0;
+      background-position:
+        center center,
+        128px 0;
     }
   }
   --radius: 0.625rem;
   --background: oklch(1 0 0);
+  --background-transparent: oklch(1 0 0 / 0.5);
   --foreground: oklch(0.13 0.028 261.692);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.13 0.028 261.692);
@@ -98,27 +103,52 @@
 
 body {
   background-color: var(--background);
-  background-image: var(--pattern);
+  background-image:
+    radial-gradient(
+      ellipse at center,
+      --background 0%,
+      oklch(12.964% 0.02739 261.707 / 0.075) 50%,
+      transparent 70%
+    ),
+    var(--pattern);
+  background-position:
+    center center,
+    0% 0%;
   animation: pan 96s linear infinite;
 }
 
 .dark body {
   color: var(--foreground);
   background-color: var(--background);
-  background-image: var(--pattern);
+  background-image:
+    radial-gradient(
+      ellipse at center,
+      var(--background) 25%,
+      var(--background-transparent) 75%,
+      transparent 100%
+    ),
+    var(--pattern);
+  background-position:
+    center center,
+    0% 0%;
 }
 
 @keyframes pan {
   0% {
-    background-position: 0% 0%;
+    background-position:
+      center center,
+      0% 0%;
   }
   100% {
-    background-position: 780px 260px;
+    background-position:
+      center center,
+      780px 260px;
   }
 }
 
 .dark {
   --background: oklch(0.13 0.028 261.692);
+  --background-transparent: oklch(0.13 0.028 261.692 / 0.5);
   --foreground: oklch(0.985 0.002 247.839);
   --card: oklch(0.21 0.034 264.665);
   --card-foreground: oklch(0.985 0.002 247.839);
