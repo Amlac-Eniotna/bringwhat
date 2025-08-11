@@ -26,11 +26,11 @@ const E404 = () => {
     <>
       <StartButton />
       <p className="max-w-lg text-sm text-pretty text-gray-500 dark:text-gray-600">
-        En cliquant sur «Create», vous consentez au stockage et à la vente de
-        vos données de manière anonyme pour une durée de 2 ans. Ces données sont
-        essentielles pour faire vivre notre plateforme. Veuillez noter que l
-        {"'"}utilisation de l{"'"}application implique nécessairement la
-        collecte de ces données.
+        En cliquant sur «Créer une liste», vous consentez au stockage et à la
+        vente de vos données de manière anonyme pour une durée de 2 ans. Ces
+        données sont essentielles pour faire vivre notre plateforme. Veuillez
+        noter que l{"'"}utilisation de l{"'"}application implique nécessairement
+        la collecte de ces données.
       </p>
     </>
   );
