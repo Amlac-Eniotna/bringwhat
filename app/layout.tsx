@@ -22,8 +22,8 @@ const syne = Syne({
 });
 
 export const metadata: Metadata = {
-  title: "BringWhat",
-  description: "Liste entre ami",
+  title: "QuiRamèneQuoi",
+  description: "Liste entre amis pour vos sorties et soirées",
 };
 
 export default function RootLayout({
@@ -43,8 +43,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <header className="relative m-auto flex w-full max-w-3xl justify-between">
-            <Link href={"/"}>
-              <h1 className="font-syne p-4 text-3xl font-black">BringWhat</h1>
+            <Link href={"/"} className="flex items-center">
+              <h1 className="font-syne p-4 font-black sm:text-3xl">
+                QuiRamèneQuoi
+              </h1>
             </Link>
             <div className="p-4">
               <ModeToggle />

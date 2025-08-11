@@ -6,8 +6,11 @@ import { z } from "zod";
 
 // Zod schema for input validation
 const UpdateListTitleSchema = z.object({
-  id: z.string().min(1, "List ID is required"),
-  title: z.string().min(1, "Title is required").max(100, "Title is too long"),
+  id: z.string().min(1, "L'ID de la liste est requis"),
+  title: z
+    .string()
+    .min(1, "Le titre est requis")
+    .max(100, "Titre est trop long"),
 });
 
 export type UpdateListTitleInput = z.infer<typeof UpdateListTitleSchema>;

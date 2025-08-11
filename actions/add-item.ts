@@ -6,11 +6,11 @@ import { z } from "zod";
 
 // Zod schema for input validation
 const AddItemSchema = z.object({
-  listId: z.string().min(1, "List ID is required"),
+  listId: z.string().min(1, "L'ID de la liste est requis"),
   title: z
     .string()
-    .min(1, "Item name is required")
-    .max(100, "Item name is too long"),
+    .min(1, "Le nom de l'article est requis")
+    .max(100, "Le nom de l'article est trop long"),
   quantity: z.string().optional(),
 });
 

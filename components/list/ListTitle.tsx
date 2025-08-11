@@ -272,7 +272,7 @@ export function ListTitle({ title }: ListTitleProps) {
       <div className="w-full">
         <input
           type="text"
-          placeholder="List title"
+          placeholder="Titre de la liste"
           className="text-foreground focus:border-primary focus:ring-primary h-9 w-full rounded-md border bg-transparent p-2 text-lg font-medium backdrop-blur-xs outline-none focus:ring-1"
           value={titleText}
           onChange={(e) => setTitleText(e.target.value)}

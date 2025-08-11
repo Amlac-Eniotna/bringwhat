@@ -67,7 +67,7 @@ const List = ({
           ))
         ) : (
           <li className="mb-3 text-center text-gray-500">
-            No items yet. Add your first item!
+            Aucun article pour l{"'"}instant. Ajoutez votre premier article !
           </li>
         )}
         <li className="w-full">

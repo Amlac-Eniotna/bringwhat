@@ -134,7 +134,7 @@ export function Item({ item }: ListItemProps) {
         <div className="flex w-full gap-2">
           <input
             type="text"
-            placeholder="Item name"
+            placeholder="Nom de l'article"
             className="text-foreground focus:border-primary focus:ring-primary h-9 w-full rounded-md border bg-transparent px-3 backdrop-blur-xs outline-none focus:ring-1"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
@@ -145,7 +145,7 @@ export function Item({ item }: ListItemProps) {
           )}
           <input
             type="text"
-            placeholder="Quantity"
+            placeholder="Quantité (facultatif)"
             className="text-foreground focus:border-primary focus:ring-primary h-9 w-full max-w-16 rounded-md border bg-transparent px-3 backdrop-blur-xs outline-none focus:ring-1"
             value={quantity}
             onChange={(e) => setQuantity(e.target.value)}

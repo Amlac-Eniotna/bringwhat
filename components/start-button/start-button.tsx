@@ -28,7 +28,7 @@ export function StartButton() {
       ) : (
         <NotebookPen className="mr-2" />
       )}
-      {isLoading ? "Creating..." : "Create"}
+      {isLoading ? "Création en cours..." : "Créer une liste"}
     </Button>
   );
 }
